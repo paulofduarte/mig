@@ -316,6 +316,7 @@ rtFindSize(const argument_t *args, u_int mask)
 {
     const argument_t *arg;
     u_int size = sizeof_mach_msg_header_t;
+    u_int max_alignment = complex_alignof;
 
     size = ALIGN(size, complex_alignof);
     for (arg = args; arg != argNULL; arg = arg->argNext)
@@ -331,11 +332,18 @@ rtFindSize(const argument_t *args, u_int mask)
 	    }
 	    size = ALIGN(size, complex_alignof);
 
+	    /* Honour types whose alignment exceeds complex_alignof.  */
+	    if (it->itAlignment > complex_alignof)
+	    {
+		size = ALIGN(size, it->itAlignment);
+		max_alignment = MAX(max_alignment, it->itAlignment);
+	    }
+
 	    /* Note itMinTypeSize is already aligned to complex_alignof. */
 	    size += it->itMinTypeSize;
 	}
 
-    return size;
+    return ALIGN(size, max_alignment);
 }
 
 bool
