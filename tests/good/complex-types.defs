@@ -39,6 +39,15 @@ type complex_struct_y_t = struct { complex_struct_x_t a; byte b; };
 
 type complex_struct_z_t = struct { complex_struct_y_t a; int d; };
 
+#ifdef __SIZEOF_INT128__
+type __int128_t = MACH_MSG_TYPE_INTEGER_128
+        ctype: __int128_t;
+type wide_struct_t = struct { __int128_t hi; int tail; };
+type wide_struct_x_t = struct { wide_struct_t a; wide_struct_t b; int c; };
+type wide_struct_y_t = struct { wide_struct_x_t a; byte b; };
+type wide_struct_z_t = struct { wide_struct_y_t a; int d; };
+#endif
+
 routine callcomplex(port : mach_port_t;
                   p : pointer_t;
                   q : intptr_t;
@@ -48,4 +57,10 @@ routine callcomplex(port : mach_port_t;
                   x : complex_struct_x_t;
                   y : complex_struct_y_t;
                   z : complex_struct_z_t;
+#ifdef __SIZEOF_INT128__
+                  w : wide_struct_t;
+                  wx : wide_struct_x_t;
+                  wy : wide_struct_y_t;
+                  wz : wide_struct_z_t;
+#endif
                   out vec : mach_port_array_t);

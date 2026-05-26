@@ -51,6 +51,29 @@ typedef struct complex_struct_z {
   int d;
 } complex_struct_z_t;
 
+#ifdef __SIZEOF_INT128__
+typedef struct wide_struct {
+  __int128 hi;
+  int tail;
+} wide_struct_t;
+
+typedef struct wide_struct_x {
+  wide_struct_t a;
+  wide_struct_t b;
+  int c;
+} wide_struct_x_t;
+
+typedef struct wide_struct_y {
+  wide_struct_x_t a;
+  char b;
+} wide_struct_y_t;
+
+typedef struct wide_struct_z {
+  wide_struct_y_t a;
+  int d;
+} wide_struct_z_t;
+#endif
+
 static inline int8_t int_to_int8(int n) {
   return (int8_t) n;
 }

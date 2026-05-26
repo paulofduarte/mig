@@ -33,3 +33,12 @@ routine timedoutfactorial(port : mach_port_t;
 
 simpleroutine simple_factorial(port : mach_port_t;
                                n : int64_t);
+
+#ifdef __SIZEOF_INT128__
+routine wide_factorial(port : mach_port_t;
+                       n : __int128_t;
+                       out result : __int128_t);
+
+simpleroutine simple_wide_factorial(port : mach_port_t;
+                                    n : __int128_t);
+#endif

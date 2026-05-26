@@ -22,6 +22,11 @@ subsystem directions 100;
 type mach_port_t = MACH_MSG_TYPE_COPY_SEND;
 type mach_port_array_t = array[] of mach_port_t;
 
+#ifdef __SIZEOF_INT128__
+type __int128_t = MACH_MSG_TYPE_INTEGER_128
+        ctype: __int128_t;
+#endif
+
 routine callinout(port : mach_port_t;
                   in n : int;
                   out result : int);
@@ -57,3 +62,8 @@ routine multipleinandout(port : mach_port_t;
                          inout n1 : int;
                          inout n2 : int;
                          out result : int);
+
+#ifdef __SIZEOF_INT128__
+routine widewideinandout(port : mach_port_t;
+                         inout n : __int128_t);
+#endif
