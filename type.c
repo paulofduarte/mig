@@ -49,6 +49,9 @@ ipc_type_t *itMsgOptionType;	/* used for dummy MsgOption args */
 ipc_type_t *itShortType;        /* used for the short type */
 ipc_type_t *itIntType;          /* used for the int type */
 ipc_type_t *itInt64Type;        /* used for the int64 type */
+#ifdef sizeof_int128
+ipc_type_t *itInt128Type;       /* used for the int128 type */
+#endif
 ipc_type_t *itUintPtrType;      /* used for the uintptr_t type */
 ipc_type_t *itIntPtrType;       /* used for the intptr_t type */
 static bool types_initialized = false;
@@ -551,6 +554,10 @@ itLongDecl(u_int inname, const_string_t instr, u_int outname,
     it->itOutNameStr = outstr;
     it->itSize = size;
     it->itAlignment = MIN(complex_alignof, size / 8);
+#ifdef sizeof_int128
+    if (inname == MACH_MSG_TYPE_INTEGER_128)
+	it->itAlignment = alignof_int128;
+#endif
     if (inname == MACH_MSG_TYPE_STRING_C)
     {
 	it->itStruct = false;
@@ -746,6 +753,13 @@ itStructDecl(u_int min_type_size_in_bytes, u_int required_alignment_in_bytes)
 	    assert(final_struct_bytes % 8 == 0);
 	    number_elements = final_struct_bytes / 8;
 	    break;
+#ifdef sizeof_int128
+	case 16:
+	    element_type = itInt128Type;
+	    assert(final_struct_bytes % 16 == 0);
+	    number_elements = final_struct_bytes / 16;
+	    break;
+#endif
         case 1:
 	default:
 	    element_type = itByteType;
@@ -815,6 +829,13 @@ itCIntTypeDecl(const_string_t ctype, const size_t size)
               "MACH_MSG_TYPE_INTEGER_64", MACH_MSG_TYPE_INTEGER_64,
               "MACH_MSG_TYPE_INTEGER_64", size * 8);
           break;
+#ifdef sizeof_int128
+      case 16:
+          it = itShortDecl(MACH_MSG_TYPE_INTEGER_128,
+              "MACH_MSG_TYPE_INTEGER_128", MACH_MSG_TYPE_INTEGER_128,
+              "MACH_MSG_TYPE_INTEGER_128", size * 8);
+          break;
+#endif
       default:
           fprintf(stderr, "Unrecognized size %zu for type %s\n", size, ctype);
           exit(EXIT_FAILURE);
@@ -987,6 +1008,10 @@ init_type(void)
     itInsert("int", itIntType);
     itInt64Type = itCIntTypeDecl("int64", sizeof_int64_t);
     itInsert("int64", itInt64Type);
+#ifdef sizeof_int128
+    itInt128Type = itCIntTypeDecl("__int128_t", sizeof_int128);
+    itInsert("int128", itInt128Type);
+#endif
     itUintPtrType = itCIntTypeDecl("uintptr_t", sizeof_uintptr_t);
     itInsert("uintptr_t", itUintPtrType);
     itIntPtrType = itCIntTypeDecl("intptr_t", sizeof_intptr_t);

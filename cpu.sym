@@ -50,6 +50,7 @@ expr MACH_MSG_TYPE_BYTE
 expr MACH_MSG_TYPE_INTEGER_8
 expr MACH_MSG_TYPE_REAL
 expr MACH_MSG_TYPE_INTEGER_64
+expr MACH_MSG_TYPE_INTEGER_128
 expr MACH_MSG_TYPE_STRING
 expr MACH_MSG_TYPE_STRING_C
 
@@ -102,6 +103,10 @@ expr sizeof(short)			sizeof_short
 expr sizeof(int)			sizeof_int
 expr sizeof(long)			sizeof_long
 expr sizeof(int64_t)			sizeof_int64_t
+#ifdef __SIZEOF_INT128__
+expr sizeof(__int128_t)			sizeof_int128
+expr __alignof__(__int128_t)		alignof_int128
+#endif
 expr sizeof(float)			sizeof_float
 expr sizeof(double)			sizeof_double
 expr sizeof(uintptr_t)			sizeof_uintptr_t
